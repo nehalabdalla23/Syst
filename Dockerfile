@@ -24,7 +24,6 @@ WORKDIR /var/www/html
 COPY . .
 
 # ضبط صلاحيات مجلدات Laravel
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # إعداد Apache لتوجيه الطلبات إلى public/
 RUN bash -c 'cat > /etc/apache2/sites-available/000-default.conf <<EOF
@@ -36,7 +35,6 @@ RUN bash -c 'cat > /etc/apache2/sites-available/000-default.conf <<EOF
     </Directory>
 </VirtualHost>
 EOF'
-
 # تفعيل Apache Rewrite Module
 RUN a2enmod rewrite
 
