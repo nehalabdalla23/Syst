@@ -15,6 +15,7 @@ COPY . .
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 # إعداد Apache لتوجيه إلى public
+# نسخ إعداد Apache لدعم Laravel
 RUN bash -c 'cat > /etc/apache2/sites-available/000-default.conf <<EOF
 <VirtualHost *:80>
     DocumentRoot /var/www/html/public
