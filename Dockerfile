@@ -1,6 +1,7 @@
+# استخدم صورة PHP الرسمية مع Apache
 FROM php:8.2-apache
 
-# تثبيت الأدوات الأساسية وامتدادات PHP
+# تثبيت الأدوات الأساسية وامتدادات PHP اللازمة للـ Laravel
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -17,16 +18,16 @@ RUN apt-get update && apt-get install -y \
 # تثبيت Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# إعداد مجلد العمل
+# إعداد مجلد العمل داخل الحاوية
 WORKDIR /var/www/html
 
-# نسخ ملفات Laravel إلى الحاوية
+# نسخ جميع الملفات من مشروعك إلى الحاوية
 COPY . .
 
 # ضبط صلاحيات مجلدات Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# نسخ إعداد Apache لدعم Laravel
+# إعداد Apache لدعم Laravel (توجيه Apache للـ public)
 RUN bash -c 'cat > /etc/apache2/sites-available/000-default.conf <<EOF
 <VirtualHost *:80>
     DocumentRoot /var/www/html/public
@@ -37,16 +38,17 @@ RUN bash -c 'cat > /etc/apache2/sites-available/000-default.conf <<EOF
 </VirtualHost>
 EOF'
 
-# تفعيل Apache Rewrite Module
+# تفعيل Apache mod_rewrite
 RUN a2enmod rewrite
 
-# تثبيت Laravel dependencies
+# تثبيت الـ dependencies باستخدام Composer
 RUN composer install --no-dev --optimize-autoloader
 
-# مسح الكاش وتشغيل الأوامر الأساسية
+# مسح الكاش وتشغيل الأوامر الأساسية للـ Laravel
 RUN php artisan config:clear && php artisan route:clear && php artisan view:clear
 
-# فتح المنفذ 80 (المستخدم من Apache)
+# فتح المنفذ 80
 EXPOSE 80
 
-# لا حاجة لـ CMD لأن Apache يعمل تلقائيًا
+# تشغيل Apache عند بدء الحاوية
+CMD ["apache2-foreground"]
