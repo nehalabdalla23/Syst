@@ -31,8 +31,7 @@ RUN bash -c 'cat > /etc/apache2/sites-available/000-default.conf <<EOF
 
 
 # تفعيل Apache Rewrite Module
-RUN a2enmod rewrite
-
+د
 # تثبيت Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
 
