@@ -467,7 +467,7 @@
             <br/>
 
             <form action="{{ route('users.store') }}"  method="POST"  class="bg-gray-900 text-blanchedalmond p-6 rounded-lg max-w-4xl mx-auto space-y-4">
-              Add-------------------------------------------------Users ----------------------------AND VALIDATION
+             
             @csrf
 
 @method('POST')
@@ -543,7 +543,7 @@
     <div class="text-right">
         <button type="submit"
             class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">
-            🔍 Filter
+             Add
         </button>
     </div>
 </form>

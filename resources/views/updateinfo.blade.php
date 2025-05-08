@@ -525,12 +525,15 @@
             <input type="text" name="Employeename" value="{{ request('Employeename') }}"
                    style="width: 100%; padding: 8px; background: chocolate; color: blanchedalmond; border: none; border-radius: 5px;">
         </div>
-    </div>
+        <br/>
+   
     <!-- Submit Button -->
     <div style="text-align: right;">
         <button type="submit" style="background: seagreen; color: white; padding: 10px 30px; font-weight: bold; border: none; border-radius: 5px;">
             🔍 Filter
         </button>
+    </div>
+  
     </div>
 </form>
 
