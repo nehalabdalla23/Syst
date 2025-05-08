@@ -27,6 +27,7 @@ COPY . .
 
 # إعداد Apache لتوجيه الطلبات إلى public/
 RUN bash -c 'cat > /etc/apache2/sites-available/000-default.conf <<EOF
+RUN bash -c 'cat > /etc/apache2/sites-available/000-default.conf <<EOF
 <VirtualHost *:80>
     DocumentRoot /var/www/html/public
     <Directory /var/www/html/public>
@@ -35,6 +36,7 @@ RUN bash -c 'cat > /etc/apache2/sites-available/000-default.conf <<EOF
     </Directory>
 </VirtualHost>
 EOF'
+
 # تفعيل Apache Rewrite Module
 RUN a2enmod rewrite
 
