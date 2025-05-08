@@ -8,7 +8,7 @@
 
     <style>
         .table-container {
-            max-height: 300px;
+            max-height: 1000px;
             overflow-y: auto;
             border: 1px solid #ccc;
         }
@@ -78,6 +78,8 @@
             </ul>
             <ul>
               
+            
+      
             <li class="relative px-6 py-3">
                 <span
                   class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg"
@@ -85,7 +87,7 @@
                 ></span>
                 <a
                   class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
-                  href="modals.html"
+                     href="{{ route('user', ['userid' => $id]) }}"
                 >
                   <svg
                     class="w-5 h-5"
@@ -104,7 +106,6 @@
                   <span class="ml-4">Department Report</span>
                 </a>
               </li>
-      
               <li class="relative px-6 py-3">
                 <span
                   class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg"
@@ -112,7 +113,7 @@
                 ></span>
                 <a
                   class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
-                  href="modals.html"
+                   href="{{ route('show.showUSERS', ['userid' => $id]) }}"
                 >
                   <svg
                     class="w-5 h-5"
@@ -128,7 +129,33 @@
                       d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
                     ></path>
                   </svg>
-                  <span class="ml-4">Admin Report</span>
+                  <span class="ml-4"> All users</span>
+                </a>
+              </li>
+              <li class="relative px-6 py-3">
+                <span
+                  class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg"
+                  aria-hidden="true"
+                ></span>
+                <a
+                  class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
+                   href="{{ route('employees.add', ['id' => $id]) }}"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    aria-hidden="true"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    ></path>
+                  </svg>
+                  <span class="ml-4"> Add User</span>
                 </a>
               </li>
          
@@ -433,10 +460,10 @@
       <form method="GET" action="{{ route('searcch') }}" style="background: #1e1e1e; padding: 25px; border-radius: 10px; max-width: 900px; margin: auto; color: blanchedalmond;">
 
     <h2 style="color: aliceblue; margin-bottom: 20px;">📊 Filter Employee Data</h2>
-
+    <input type="hidden" name="id" value="{{ $id }}">
     <!-- Top Controls -->
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <a href="{{ route('show.showUSERS') }}">
+        <a href="{{ route('show.showUSERS', ['userid' => $id])}}">
             <button type="button" style="background: #555; color: white; padding: 8px 16px; border: none; border-radius: 5px;">
                 🔄 Reset
             </button>
@@ -545,7 +572,8 @@
 
                       <tr class="text-gray-700 dark:text-gray-400">
                         <td class="px-4 py-3 text-sm">
-                        <a href="{{ route('employees.edit', $employees->id) }}" class="btn btn-sm btn-warning">{{ $employees->id  }}</a>
+                          
+                        <a href="{{ route('employees.edit', [$employees->id,$id]) }}" class="btn btn-sm btn-warning">{{ $employees->id  }}</a>
 
                         
                         </td>
@@ -554,7 +582,7 @@
                         </td>
                         
                         <td class="px-4 py-3 text-sm">
-                        {{ $employees->Employee }}
+                        {{ $employees->email }}
                         </td>
     
                         <td class="px-4 py-3 text-xs">

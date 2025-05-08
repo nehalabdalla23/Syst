@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 class EmployeeController extends Controller
 {
-    public function Add()
+    public function Add($id)
     {  $teams = DB::table('teammss')
    
             ->select('teammss.*')
@@ -24,11 +24,14 @@ class EmployeeController extends Controller
          
         'departments'=>$departments,
     'teams'=>$teams,
+        'id'=>$id,
 'tiltes'=>$tiltes]);
     }
 
-    public function edit($id)
-    {  $teams = DB::table('teammss')
+    public function edit($userid,$id)
+    {  
+        $id=$id;
+        $teams = DB::table('teammss')
    
             ->select('teammss.*')
         ->get(); // ✅ returns a single stdClass object
@@ -44,7 +47,7 @@ class EmployeeController extends Controller
         ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
         ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
         ->leftJoin('users as manager', 'users.DirectManagerID', '=', 'manager.id') // هذا ليس جدول جديد، بل alias
-        ->where('users.id', $id)
+        ->where('users.id', $userid)
         ->select(
             'users.*',
             'teammss.*',
@@ -61,21 +64,59 @@ class EmployeeController extends Controller
             'employee' => $employee,
         'departments'=>$departments,
     'teams'=>$teams,
+    'id'=>$id,
 'tiltes'=>$tiltes]);
     }
     
-    public function update(Request $request, $id)
+  public function update(Request $request, $id)
+{$userid=$request->input('Employeeid');
+ 
+   
+    // Use Eloquent to retrieve the user
+    $employee = \App\Models\User::findOrFail($userid);
+
+    // Update only the needed fields
+    $employee->name = $request->Employeename;
+    $employee->email = $request->Employeeemail;
+
+    $employee->name = $request->Employeename;
+    $employee->email = $request->Employeeemail;
+
+    if ($request->filled('Employeepassword')) {
+        $employee->password = bcrypt($request->Employeepassword);
+    }
+
+    if ($request->departments && $request->departments !== "None") {
+        $employee->departments_id = $request->departments;
+    }
+
+    if ($request->teams && $request->teams !== "None") {
+        $employee->current_team_id = $request->teams;
+    }
+
+    if ($request->tiltes && $request->tiltes !== "None") {
+        $employee->tilte_id = $request->tiltes;
+    }
+
+    $employee->save();
+
+    return redirect()->route('show.showUSERS', $id)->with('success', 'تم تحديث البيانات بنجاح');
+}
+public function store(Request $request)
     {
-        $employee = DB::table('users')::findOrFail($id);
-    
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $id,
-            // أضف التحققات الأخرى حسب الحاجة
+        // التحقق من صحة البيانات
+  
+        // إنشاء مستخدم جديد
+        User::create([
+            'id' => $request->Employeeid,
+            'name' => $request->Employeename,
+            'email' => $request->Employeeemail,
+            'tilte_id'=>$request->tiltes,
+            'departments_id'=>$request->departments,
+            'current_team_id'=>$request->teams,
+            'password' => bcrypt($request->password), // تشفير الباسورد
         ]);
-    
-        $employee->update($request->all());
-    
-        return redirect()->route('employees.edit', $id)->with('success', 'تم تحديث البيانات بنجاح');
+
+        return redirect()->back()->with('success', 'تم إضافة المستخدم بنجاح');
     }
 }

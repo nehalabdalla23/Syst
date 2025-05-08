@@ -15,18 +15,22 @@ class AuthController extends Controller
       return view('auth.register');
   }public function searches(Request $request)
 
-  {
+  {$id=$request->input('id');
+    
     
     $selectemployee=$request->input('Employeeid');
-   
-       if($request->input('Employeeid')!='')
-       {    $users = DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
-        ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
-        ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
-        ->leftJoin('users as manager', 'users.DirectManagerID', '=', 'manager.id') // هذا ليس جدول جديد، بل alias
-        ->where('users.id', $selectemployee)
-        ->select(
+    if ($request->filled('Employeeid')) {
+      
+      $selectemployee = $request->input('Employeeid');
+  
+      // بيانات الموظف
+      $users = DB::table('users')
+          ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+          ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
+          ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+          ->leftJoin('users as manager', 'users.DirectManagerID', '=', 'manager.id')
+          ->where('users.id', $request->input('Employeeid'))
+          ->select(
             'users.*',
             'teammss.*',
             'departments.*',
@@ -34,81 +38,73 @@ class AuthController extends Controller
             'tilte.Name as title',
             'users.name as Employee',
             'departments.Names as Department',
-            'manager.name as DirectManagerName' // اسم المدير من نفس جدول users
-        )
-        ->get();
-          $userdepartments =  DB::table('users')
-          ->join('departments', 'users.departments_id', '=', 'departments.ID')
-          ->where('users.id', $selectemployee)
-          ->select('users.departments_id','departments.*')
-          ->get(); // ✅ returns a single stdClass object
+            'manager.name as DirectManagerName'
+          )
+          ->get(); // Use first() instead of get() for single record
   
+      // بيانات القسم
       $userdepartments = DB::table('users')
-      ->join('departments', 'users.departments_id', '=', 'departments.ID')
-      ->where('users.id', $selectemployee)
-      ->select('users.departments_id','departments.*')
-      ->get(); // ✅ returns a single stdClass object
-  
-  
-      
-    
-      
+          ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+          ->where('users.id', $selectemployee)
+          ->select('users.departments_id', 'departments.*')
+          ->first();
+          $userdepartments = DB::table('departments')
+          
+          ->select('departments.*')
+          ->get(); // ✅ returns a single stdClass object
+      // بيانات الفريق
       $teams = DB::table('teammss')
-      ->join('users', 'users.current_team_id', '=', 'teammss.team_id')
-      ->where('users.id', $selectemployee)
-      ->select('teammss.*')
-  ->get(); // ✅ returns a single stdClass object
+          ->leftJoin('users', 'users.current_team_id', '=', 'teammss.team_id')
+          ->where('users.id', $selectemployee)
+          ->select('teammss.*')
+          ->get();
   
-  $Allusers=DB::table('users')
-  ->join('departments', 'users.departments_id', '=', 'departments.ID')
-  
-  ->select('users.*','departments.*')
-  ->get();
-  
-  
-
-
-       }
-
+      // جميع الموظفين
+      $Allusers = DB::table('users')
+          ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+          ->select('users.*', 'departments.*')
+          ->get();
+  }
+else{
        $selectname=$request->input('Employeename');
        if($selectname!= '') {
 
         // استعلام بيانات الموظف مع معلومات القسم والوظيفة والفريق والمدير
         $users = DB::table('users')
-            ->join('departments', 'users.departments_id', '=', 'departments.ID')
-            ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
-            ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+            ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+            ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
+            ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
             ->leftJoin('users as manager', 'users.DirectManagerID', '=', 'manager.id')
             ->where('users.name', 'like', '%' . $selectname . '%')
             ->select(
-                'users.*',
-                'teammss.*',
-                'departments.*',
-                'tilte.*',
-                'tilte.Name as title',
-                'users.name as Employee',
-                'departments.Names as Department',
-                'manager.name as DirectManagerName'
+              'users.*',
+              'teammss.*',
+              'departments.*',
+              'tilte.*',
+              'tilte.Name as title',
+              'users.name as Employee',
+              'departments.Names as Department',
+              'manager.name as DirectManagerName'
             )
             ->get();
     
         // بيانات القسم الخاص بالموظف
         $userdepartments = DB::table('users')
-            ->join('departments', 'users.departments_id', '=', 'departments.ID')
+            ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             ->where('users.name', 'like', '%' . $selectname . '%')
             ->select('users.departments_id', 'departments.*')
             ->get();
     
         // بيانات الفريق الخاص بالموظف
         $teams = DB::table('teammss')
-            ->join('users', 'users.current_team_id', '=', 'teammss.team_id')
+            ->leftJoin('users', 'users.current_team_id', '=', 'teammss.team_id')
             ->where('users.name', 'like', '%' . $selectname . '%')
             ->select('teammss.*')
             ->get();
     
         // جميع الموظفين لجميع الأقسام
         $Allusers = DB::table('users')
-            ->join('departments', 'users.departments_id', '=', 'departments.ID')
+            ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             
             ->select('users.*', 'departments.*')
             ->get();
@@ -120,19 +116,19 @@ class AuthController extends Controller
     ->select('departments.*')
     ->get(); // ✅ returns a single stdClass object
     $users = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
-    ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
-    ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
+    ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
     ->leftJoin('users as manager', 'users.DirectManagerID', '=', 'manager.id') // هذا ليس جدول جديد، بل alias
     ->select(
-        'users.*',
-        'teammss.*',
-        'departments.*',
-        'tilte.*',
-        'tilte.Name as title',
-        'users.name as Employee',
-        'departments.Names as Department',
-        'manager.name as DirectManagerName' // اسم المدير من نفس جدول users
+      'users.*',
+      'teammss.*',
+      'departments.*',
+      'tilte.*',
+      'tilte.Name as title',
+      'users.name as Employee',
+      'departments.Names as Department',
+      'manager.name as DirectManagerName' // اسم المدير من نفس جدول users
     )
     ->get();
     $teams = DB::table('teammss')
@@ -140,7 +136,7 @@ class AuthController extends Controller
         ->select('teammss.*')
     ->get(); // ✅ returns a single stdClass object
     $Allusers=DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         
         ->select('users.*','departments.*')
         ->get();
@@ -149,9 +145,9 @@ class AuthController extends Controller
       $selecteddepartment=$request->input('deparments');
       if ($selecteduser && $selecteduser !== 'All'){
         $users = DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
-        ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
-        ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
+        ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
         ->leftJoin('users as manager', 'users.DirectManagerID', '=', 'manager.id') // هذا ليس جدول جديد، بل alias
         ->where('users.id', $selecteduser)
         ->select(
@@ -166,13 +162,13 @@ class AuthController extends Controller
         )
         ->get();
           $userdepartments =  DB::table('users')
-          ->join('departments', 'users.departments_id', '=', 'departments.ID')
+          ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
           ->where('users.id', $selecteduser)
           ->select('users.departments_id','departments.*')
           ->get(); // ✅ returns a single stdClass object
   
       $userdepartments = DB::table('users')
-      ->join('departments', 'users.departments_id', '=', 'departments.ID')
+      ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
       ->where('users.id', $selecteduser)
       ->select('users.departments_id','departments.*')
       ->get(); // ✅ returns a single stdClass object
@@ -182,7 +178,7 @@ class AuthController extends Controller
     
       
       $teams = DB::table('teammss')
-      ->join('users', 'users.current_team_id', '=', 'teammss.team_id')
+      ->leftJoin('users', 'users.current_team_id', '=', 'teammss.team_id')
       ->where('users.id', $selecteduser)
       ->select('teammss.*')
   ->get(); // ✅ returns a single stdClass object
@@ -198,36 +194,36 @@ class AuthController extends Controller
       else{ if ($selectedTeam && $selectedTeam !== 'All')
           {
             $teams = DB::table('teammss')
-            ->join('users', 'users.current_team_id', '=', 'teammss.team_id')
+            ->leftJoin('users', 'users.current_team_id', '=', 'teammss.team_id')
             ->where('users.current_team_id', $selectedTeam)
             ->select('teammss.*')
         ->get(); // ✅ returns a single stdClass object
         
            
             $users = DB::table('users')
-            ->join('departments', 'users.departments_id', '=', 'departments.ID')
-            ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
-            ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+            ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+            ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
+            ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
             ->leftJoin('users as manager', 'users.DirectManagerID', '=', 'manager.id') // هذا ليس جدول جديد، بل alias
             ->where('users.current_team_id', $selectedTeam)
             ->select(
-                'users.*',
-                'teammss.*',
-                'departments.*',
-                'tilte.*',
-                'tilte.Name as title',
-                'users.name as Employee',
-                'departments.Names as Department',
-                'manager.name as DirectManagerName' // اسم المدير من نفس جدول users
+              'users.*',
+              'teammss.*',
+              'departments.*',
+              'tilte.*',
+              'tilte.Name as title',
+              'users.name as Employee',
+              'departments.Names as Department',
+              'manager.name as DirectManagerName' // اسم المدير من نفس جدول users
             )
             ->get();
               $Allusers = DB::table('users')
-              ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+              ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
               ->where('users.current_team_id', $selectedTeam)
               ->select('users.*', 'teammss.*')
               ->get();
               $userdepartments = DB::table('users')
-              ->join('departments', 'users.departments_id', '=', 'departments.ID')
+              ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
               ->where('users.current_team_id', $selectedTeam)
               ->select('users.departments_id','departments.*')
               ->get(); // ✅ returns a single stdClass object
@@ -242,29 +238,29 @@ class AuthController extends Controller
         ->select('departments.*')
         ->get(); // ✅ returns a single stdClass object
         $users = DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
-        ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
-        ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
+        ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
         ->where('departments.ID', $selecteddepartment)
         ->leftJoin('users as manager', 'users.DirectManagerID', '=', 'manager.id') // هذا ليس جدول جديد، بل alias
         ->select(
-            'users.*',
-            'teammss.*',
-            'departments.*',
-            'tilte.*',
-            'tilte.Name as title',
-            'users.name as Employee',
-            'departments.Names as Department',
-            'manager.name as DirectManagerName' // اسم المدير من نفس جدول users
+          'users.*',
+          'teammss.*',
+          'departments.*',
+          'tilte.*',
+          'tilte.Name as title',
+          'users.name as Employee',
+          'departments.Names as Department',
+          'manager.name as DirectManagerName' // اسم المدير من نفس جدول users
         )
         ->get();
         $teams = DB::table('teammss')
-        ->join('departments', 'teammss.depart_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'teammss.depart_id', '=', 'departments.ID')
         ->where('departments.ID', $selecteddepartment)
             ->select('teammss.*')
         ->get(); // ✅ returns a single stdClass object
         $Allusers=DB::table('users')
-            ->join('departments', 'users.departments_id', '=', 'departments.ID')
+            ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             ->where('departments.ID', $selecteddepartment)
             ->select('users.*','departments.*')
             ->get();
@@ -275,31 +271,33 @@ class AuthController extends Controller
   }
 }
       }
-    
+}
   
       return view('updateinfo', [
         'users' => $users,
       'userdepartments'=>$userdepartments,
     'teams'=>$teams,
-  'Allusers'=>$Allusers]);
+    'id'=>$id,
+  'Allusers'=>$Allusers
+]);
       
       
+ 
   }
 
 
 
 
-
   public function searcch(Request $request)
-  {
+  {$id=$request->input('id');
     $userdepartments = DB::table('departments')
   
     ->select('departments.*')
     ->get(); // ✅ returns a single stdClass object
     $users = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
-    ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
-    ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
+    ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
     ->leftJoin('users as manager', 'users.DirectManagerID', '=', 'manager.id') // هذا ليس جدول جديد، بل alias
     ->select(
         'users.*',
@@ -317,7 +315,7 @@ class AuthController extends Controller
         ->select('teammss.*')
     ->get(); // ✅ returns a single stdClass object
     $Allusers=DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         
         ->select('users.*','departments.*')
         ->get();
@@ -327,36 +325,36 @@ class AuthController extends Controller
     $selecteddepartment=$request->input('department');
     if ($selecteduser && $selecteduser !== 'All'){
       $userdepartments = DB::table('departments')
-      ->join('users', 'users.departments_id', '=', 'departments.ID')
+      ->leftJoin('users', 'users.departments_id', '=', 'departments.ID')
       ->where('users.id', $selecteduser)
     ->select('departments.*')
     ->get(); // ✅ returns a single stdClass object
    
       $teams = DB::table('teammss')
-      ->join('users', 'users.current_team_id', '=', 'teammss.team_id')
+      ->leftJoin('users', 'users.current_team_id', '=', 'teammss.team_id')
       ->where('users.id', $selecteduser)
       ->select('teammss.*')
   ->get(); // ✅ returns a single stdClass object
         $userdepartments =  DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->where('users.id', $selecteduser)
         ->select('users.departments_id','departments.*')
         ->get(); // ✅ returns a single stdClass object
 $users = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
-    ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
-    ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
+    ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
     ->leftJoin('users as manager', 'users.DirectManagerID', '=', 'manager.id') // هذا ليس جدول جديد، بل alias
     ->where('users.id', $selecteduser)
     ->select(
-        'users.*',
-        'teammss.*',
-        'departments.*',
-        'tilte.*',
-        'tilte.Name as title',
-        'users.name as Employee',
-        'departments.Names as Department',
-        'manager.name as DirectManagerName' // اسم المدير من نفس جدول users
+      'users.*',
+      'teammss.*',
+      'departments.*',
+      'tilte.*',
+      'tilte.Name as title',
+      'users.name as Employee',
+      'departments.Names as Department',
+      'manager.name as DirectManagerName' // اسم المدير من نفس جدول users
     )
     ->get();
 
@@ -379,20 +377,20 @@ $users = DB::table('users')
         ->get(); // ✅ returns a single stdClass object
        
           $teams = DB::table('teammss')
-          ->join('departments', 'departments.ID', '=', 'teammss.depart_id')
+          ->leftJoin('departments', 'departments.ID', '=', 'teammss.depart_id')
           ->where('departments.ID', $selectedTeam)
           ->select('teammss.*')
       ->get(); // ✅ returns a single stdClass object
             $userdepartments =  DB::table('users')
-            ->join('departments', 'users.departments_id', '=', 'departments.ID')
+            ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             ->where('departments.ID', $selectedTeam)
 
             ->select('users.departments_id','departments.*')
             ->get(); // ✅ returns a single stdClass object
     $users = DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
-        ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
-        ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
+        ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
         ->leftJoin('users as manager', 'users.DirectManagerID', '=', 'manager.id') // هذا ليس جدول جديد، بل alias
         ->where('departments.ID', $selectedTeam)
 
@@ -416,6 +414,7 @@ $users = DB::table('users')
 
     return view('updateinfo', [
       'users' => $users,
+      'id'=>$id,
     'userdepartments'=>$userdepartments,
   'teams'=>$teams,
 'Allusers'=>$Allusers]);
@@ -424,23 +423,25 @@ $users = DB::table('users')
      
   }
 
-  public function showUSERS()
+  public function showUSERS($id)
   {
     $userdepartments = DB::table('departments')
   
     ->select('departments.*')
     ->get(); // ✅ returns a single stdClass object
     $users = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
-    ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
-    ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
+    ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
     ->leftJoin('users as manager', 'users.DirectManagerID', '=', 'manager.id') // هذا ليس جدول جديد، بل alias
     ->select(
         'users.*',
+
         'teammss.*',
         'departments.*',
         'tilte.*',
         'tilte.Name as title',
+        'USERS.EMAIL as EMAIL',
         'users.name as Employee',
         'departments.Names as Department',
         'manager.name as DirectManagerName' // اسم المدير من نفس جدول users
@@ -450,11 +451,12 @@ $users = DB::table('users')
         ->select('teammss.*')
     ->get(); // ✅ returns a single stdClass object
     $Allusers=DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('users.*','users.name as name','departments.*')
         ->get();
       return view('updateinfo', [
         'users' => $users,
+        'id' => $id,
       'userdepartments'=>$userdepartments,
     'teams'=>$teams,
   'Allusers'=>$Allusers]);

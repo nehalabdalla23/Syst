@@ -16,12 +16,17 @@ class modalscontroller extends Controller
     function users($userid){
        
         $id=$userid;
+        $usertitle = DB::table('users')
+        ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
+        ->where('users.id', $userid)
+        ->select('users.*', 'tilte.*')
+        ->first();
         $userdepartment = DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->where('users.id', $userid)
         ->select('users.departments_id','departments.*')
         ->first(); // ✅ returns a single stdClass object
-        if(($userdepartment->departments_id)==7||($userdepartment->departments_id)==10){
+        if(($usertitle->tilte_id  )==7||($userdepartment->departments_id)==8){
             $employees = DB::table('users')
     ->leftJoin('compensations', 'users.id', '=', 'compensations.Updated_By')
     ->leftJoin('vali', 'vali.Order_ID', '=', 'compensations.Order_ID')
@@ -44,82 +49,82 @@ class modalscontroller extends Controller
         ->select('departments.*')
         ->get(); // ✅ returns a single stdClass object
         $usertitle = DB::table('users')
-        ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
+        ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
         ->where('users.id', $userid)
         ->select('users.*', 'tilte.*')
         ->first();
         $users = DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
-        ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
         ->where('users.id',$userid)
         ->select('users.*','departments.*','tilte.*')
         ->first();
 
 
     $Allusers=DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->where('users.departments_id', $userdepartment->departments_id)
         ->select('users.*','departments.*')
         ->get();
     $userdepartments = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->where('users.id', $userid)
     ->select('users.departments_id','departments.*')
     ->get(); // ✅ returns a single stdClass object
     $teams = DB::table('teammss')
-    ->join('departments', 'teammss.depart_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'teammss.depart_id', '=', 'departments.ID')
     ->select('teammss.*','departments.*')
     ->get(); // ✅ returns a single stdClass object
 
     
         $totalaction = DB::table('compensations')
-        ->join('users', 'users.id', '=', 'compensations.Updated_By')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             ->select('compensations.*','users.*','departments.*')
 
             ->count();
 
             $compensation = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
       
     ->where('validation',0)
     ->select('compensations.*','users.*', 'vali.*')
     ->get();
     $reasons = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
     
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->select('compensations.*','users.name as Employee','departments.*')
   
     ->where('vali.reasonid',0)
     ->select('compensations.*','users.name as Employee', 'vali.*')
     ->get();
     $wrongactionscount = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
       
     ->where('validation',0)
     ->select('compensations.*', 'vali.*')
     ->count();
     $rightactionscount = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
       
     ->where('validation',1)
     ->select('compensations.*', 'vali.*')
     ->count();
     $wrongreasoncount = DB::table('compensations')
-     ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+     ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
       
     ->where('validation',0)
@@ -141,20 +146,142 @@ class modalscontroller extends Controller
             'id'=>$id
         ]);
         }
-        else{
-        $userdepartmentt = DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
-        ->where('users.id', $userid)
-        ->select('users.departments_id','departments.*')
+        elseif(($usertitle->tilte_id  )!=6&&($userdepartment->departments_id)==7)
+        
+        {
+            $employees = DB::table('users')
+    ->leftJoin('compensations', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('vali', 'vali.Order_ID', '=', 'compensations.Order_ID')
+    
+    ->select(
+        'users.id',
+        'users.name',
+        'users.email',
+        DB::raw('COUNT(compensations.Order_ID ) as compensations_count'),
+        DB::raw('COUNT(CASE WHEN vali.validation = 0 THEN 1 END) as validation_wrong'),
+        DB::raw('COUNT(CASE WHEN vali.validation = 1 THEN 1 END) as validation_right')
+    )
+    ->groupBy(
+        'users.id',
+        'users.name',
+        'users.email'
+    )
+    ->get();
+            $deparments = DB::table('departments')  
+        ->select('departments.*')
         ->get(); // ✅ returns a single stdClass object
         $usertitle = DB::table('users')
-        ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
+        ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
         ->where('users.id', $userid)
         ->select('users.*', 'tilte.*')
         ->first();
         $users = DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
-        ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
+        ->where('users.id',$userid)
+        ->select('users.*','departments.*','tilte.*')
+        ->first();
+
+
+    $Allusers=DB::table('users')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+        ->where('users.departments_id', $userdepartment->departments_id)
+        ->select('users.*','departments.*')
+        ->get();
+    $userdepartments = DB::table('users')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+    ->where('users.id', $userid)
+    ->select('users.departments_id','departments.*')
+    ->get(); // ✅ returns a single stdClass object
+    $teams = DB::table('teammss')
+    ->leftJoin('departments', 'teammss.depart_id', '=', 'departments.ID')
+    ->select('teammss.*','departments.*')
+    ->get(); // ✅ returns a single stdClass object
+
+    
+        $totalaction = DB::table('compensations')
+        ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+            ->select('compensations.*','users.*','departments.*')
+
+            ->count();
+
+            $compensation = DB::table('compensations')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+        ->select('compensations.*','users.*','departments.*')
+      
+    ->where('validation',0)
+    ->select('compensations.*','users.*', 'vali.*')
+    ->get();
+    $reasons = DB::table('compensations')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+    ->select('compensations.*','users.name as Employee','departments.*')
+  
+    ->where('vali.reasonid',0)
+    ->select('compensations.*','users.name as Employee', 'vali.*')
+    ->get();
+    $wrongactionscount = DB::table('compensations')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+        ->select('compensations.*','users.*','departments.*')
+      
+    ->where('validation',0)
+    ->select('compensations.*', 'vali.*')
+    ->count();
+    $rightactionscount = DB::table('compensations')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+        ->select('compensations.*','users.*','departments.*')
+      
+    ->where('validation',1)
+    ->select('compensations.*', 'vali.*')
+    ->count();
+    $wrongreasoncount = DB::table('compensations')
+     ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+        ->select('compensations.*','users.*','departments.*')
+      
+    ->where('validation',0)
+    ->select('compensations.*', 'vali.*')
+    ->count();
+        return view('quality', [
+            'users' => $users,
+            'employees' => $employees,
+            'userdepartments' =>  $userdepartments ,
+            'department'=>$deparments,
+            'totalaction'=> $totalaction,
+            'rightactionscount'=> $rightactionscount,
+            'wrongactionscount'=> $wrongactionscount,
+            'wrongreasoncount'=> $wrongreasoncount,
+            'compensations' => $compensation,
+            'reasons' => $reasons,
+            'teams' => $teams,
+            'Allusers' => $Allusers,
+            'id'=>$id
+        ]);
+        }
+        else{
+        $userdepartmentt = DB::table('users')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+        ->where('users.id', $userid)
+        ->select('users.departments_id','departments.*')
+        ->get(); // ✅ returns a single stdClass object
+        $usertitle = DB::table('users')
+        ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
+        ->where('users.id', $userid)
+        ->select('users.*', 'tilte.*')
+        ->first();
+        $users = DB::table('users')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
         ->where('users.id',$userid)
         ->select('users.*','departments.*','tilte.*')
         ->first();
@@ -179,21 +306,21 @@ if($usertitle->tilte_id=='6')
     )
     ->get();
     $teams = DB::table('users')
-    ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+    ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
     ->where('users.id', $userid)
     ->select('teammss.*', 'users.*')
     ->get(); // ✅ returns a single stdClass object
     $userdepartments =$userdepartmentt;
     
     $users = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
-    ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
     ->where('users.id',$userid)
     ->select('users.*','departments.*','tilte.*')
     ->first();
     $userss = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
-    ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
     ->where('users.id',$userid)
     ->select('users.*','departments.*','tilte.*')
     ->get();
@@ -204,34 +331,34 @@ $Allusers=$userss;
         ->count();
 
         $compensation = DB::table('compensations')
-        ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-        ->join('users', 'compensations.Updated_By', '=', 'users.id')
+        ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+        ->leftJoin('users', 'compensations.Updated_By', '=', 'users.id')
         ->where('compensations.Updated_By', $userid)
         ->where('vali.validation', 0)
         ->select('compensations.*', 'users.name', 'vali.*')
         ->get();
         $reasons = DB::table('compensations')
-        ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+        ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
         
-        ->join('users', 'compensations.Updated_By', '=', 'users.id')
+        ->leftJoin('users', 'compensations.Updated_By', '=', 'users.id')
         ->where('compensations.Updated_By', $userid)
         ->where('vali.reasonid', 0)
         ->select('compensations.*', 'users.name as Employee', 'vali.*')
         ->get();
 $wrongactionscount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
 ->where('Updated_By',$userid)
 ->where('validation',0)
 ->select('compensations.*', 'vali.*')
 ->count();
 $rightactionscount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
 ->where('Updated_By',$userid)
 ->where('validation',1)
 ->select('compensations.*', 'vali.*')
 ->count();
 $wrongreasoncount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
 ->where('Updated_By',$userid)
 ->where('validation',0)
 ->select('compensations.*', 'vali.*')
@@ -244,7 +371,7 @@ else{
     $employees = DB::table('users')
     ->leftJoin('compensations', 'users.id', '=', 'compensations.Updated_By')
     ->leftJoin('vali', 'vali.Order_ID', '=', 'compensations.Order_ID')
-          ->join('departments', 'users.departments_id', '=', 'departments.ID')
+          ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->where('users.departments_id', $userdepartment->departments_id)
     ->select(
         'users.id',
@@ -262,70 +389,70 @@ else{
     ->get();
 
     $Allusers=DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->where('users.departments_id', $userdepartment->departments_id)
         ->select('users.*','departments.*')
         ->get();
     $userdepartments = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->where('users.id', $userid)
     ->select('users.departments_id','departments.*')
     ->get(); // ✅ returns a single stdClass object
     $teams = DB::table('teammss')
-    ->join('departments', 'teammss.depart_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'teammss.depart_id', '=', 'departments.ID')
     ->where('teammss.depart_id', $userdepartment->departments_id)
     ->select('teammss.*','departments.*')
     ->get(); // ✅ returns a single stdClass object
 
     
         $totalaction = DB::table('compensations')
-        ->join('users', 'users.id', '=', 'compensations.Updated_By')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             ->select('compensations.*','users.*','departments.*')
             ->where('users.departments_id',$userdepartment->departments_id)
             ->count();
 
             $compensation = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
         ->where('users.departments_id',$userdepartment->departments_id)
     ->where('validation',0)
     ->select('compensations.*','users.*', 'vali.*')
     ->get();
     $reasons = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
     
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->select('compensations.*','users.*','departments.*')
     ->where('users.departments_id',$userdepartment->departments_id)
     ->where('vali.reasonid',0)
     ->select('compensations.*','users.name as Employee', 'vali.*')
     ->get();
     $wrongactionscount = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
         ->where('users.departments_id',$userdepartment->departments_id)
     ->where('validation',0)
     ->select('compensations.*', 'vali.*')
     ->count();
     $rightactionscount = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
         ->where('users.departments_id',$userdepartment->departments_id)
     ->where('validation',1)
     ->select('compensations.*', 'vali.*')
     ->count();
     $wrongreasoncount = DB::table('compensations')
-     ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+     ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
         ->where('users.departments_id',$userdepartment->departments_id)
     ->where('validation',0)
@@ -357,23 +484,23 @@ else{
     $selectedTeam = $request->input('teams');
     $userid=$request->userid;
     $userdepartment = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->where('users.id', $userid)
     ->select('users.departments_id','departments.*')
     ->first(); // ✅ returns a single stdClass object
     $userdepartmentt = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->where('users.id', $userid)
     ->select('users.departments_id','departments.*')
     ->get(); // ✅ returns a single stdClass object
     $users = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
-    ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
     ->where('users.id',$userid)
     ->select('users.*','departments.*','tilte.*')
     ->first();
     $usertitle = DB::table('users')
-    ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
+    ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
     ->where('users.id', $userid)
     ->select('users.*', 'tilte.*')
     ->first();
@@ -425,13 +552,13 @@ else{
         })
         ->count();
         $teams = DB::table('teammss')
-        ->join('users', 'users.current_team_id', '=', 'teammss.team_id')
+        ->leftJoin('users', 'users.current_team_id', '=', 'teammss.team_id')
         ->where('users.id',$userid)
         ->select('teammss.*','users.*')
         ->get(); // ✅ returns a single stdClass object
         $compensation = DB::table('compensations')
-        ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-        ->join('users', 'compensations.Updated_By', '=', 'users.id')
+        ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+        ->leftJoin('users', 'compensations.Updated_By', '=', 'users.id')
         ->where('compensations.Updated_By', $userid)
         ->where('vali.validation', 0)
         ->where(function ($query) use ($request) {
@@ -450,9 +577,9 @@ else{
         ->get();
 
         $reasons = DB::table('compensations')
-        ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+        ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
    
-        ->join('users', 'compensations.Updated_By', '=', 'users.id')
+        ->leftJoin('users', 'compensations.Updated_By', '=', 'users.id')
         ->where('compensations.Updated_By', $userid)
         ->where('vali.reasonid', 0)
         ->where(function ($query) use ($request) {
@@ -470,7 +597,7 @@ else{
         ->select('compensations.*','users.name as Employee', 'vali.*')
         ->get();
 $wrongactionscount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
 ->where('Updated_By',$userid)
 ->where('validation',0)
 ->where(function ($query) use ($request) {
@@ -488,7 +615,7 @@ $wrongactionscount = DB::table('compensations')
 ->select('compensations.*', 'vali.*')
 ->count();
 $rightactionscount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
 ->where('Updated_By',$userid)
 ->where('validation',1)
 ->where(function ($query) use ($request) {
@@ -506,7 +633,7 @@ $rightactionscount = DB::table('compensations')
 ->select('compensations.*', 'vali.*')
 ->count();
 $wrongreasoncount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
 ->where('Updated_By',$userid)
 ->where('validation',0)
 ->where(function ($query) use ($request) {
@@ -556,12 +683,12 @@ $wrongreasoncount = DB::table('compensations')
             ->get();
          
         $Allusers=DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->where('users.departments_id', $userdepartment->departments_id)
         ->select('users.*','departments.*')
         ->get();
         $userdepartments = DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->where('users.id', $userid)
         ->select('users.departments_id','departments.*')
         ->get(); // ✅ returns a single stdClass object
@@ -570,8 +697,8 @@ $wrongreasoncount = DB::table('compensations')
         $id=$userid;
       
     $totalaction = DB::table('compensations')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
         ->where('users.departments_id',$userdepartment->departments_id)
         ->where('users.id',$selecteduser)
@@ -594,14 +721,14 @@ $wrongreasoncount = DB::table('compensations')
         ->count();
 
         $teams = DB::table('teammss')
-        ->join('departments', 'teammss.depart_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'teammss.depart_id', '=', 'departments.ID')
         ->where('teammss.depart_id', $userdepartment->departments_id)
         ->select('teammss.*','departments.*')
         ->get(); // ✅ returns a single stdClass object
         $compensation = DB::table('compensations')
-        ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-        ->join('users', 'users.id', '=', 'compensations.Updated_By')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+        ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             ->select('compensations.*','users.*','departments.*')
             ->where('users.departments_id',$userdepartment->departments_id)
             ->where('users.id',$selecteduser)
@@ -623,10 +750,10 @@ $wrongreasoncount = DB::table('compensations')
         ->get();
 
         $reasons = DB::table('compensations')
-        ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-        ->join('users', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+        ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
         
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             ->select('compensations.*','users.name as Employee','departments.*')
             ->where('users.departments_id',$userdepartment->departments_id)
             ->where('users.id',$selecteduser)
@@ -647,9 +774,9 @@ $wrongreasoncount = DB::table('compensations')
         ->select('compensations.*','users.*', 'vali.*')
         ->get();
 $wrongactionscount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->select('compensations.*','users.*','departments.*')
     ->where('users.departments_id',$userdepartment->departments_id)
     ->where('users.id',$selecteduser)
@@ -672,9 +799,9 @@ $wrongactionscount = DB::table('compensations')
 ->select('compensations.*', 'vali.*')
 ->count();
 $rightactionscount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->select('compensations.*','users.*','departments.*')
     ->where('users.departments_id',$userdepartment->departments_id)
     ->where('users.id',$selecteduser)
@@ -695,9 +822,9 @@ $rightactionscount = DB::table('compensations')
 ->select('compensations.*', 'vali.*')
 ->count();
 $wrongreasoncount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->select('compensations.*','users.*','departments.*')
     ->where('users.id',$selecteduser)
     
@@ -729,10 +856,12 @@ $wrongreasoncount = DB::table('compensations')
             
             if ($selectedTeam && $selectedTeam !== 'All')
             {
+
+
                 $employees = DB::table('users')
                 ->leftJoin('compensations', 'users.id', '=', 'compensations.Updated_By')
                 ->leftJoin('vali', 'vali.Order_ID', '=', 'compensations.Order_ID')
-                ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+                ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
                 ->where('users.current_team_id', $selectedTeam)
                 ->select(
                     'users.id',
@@ -750,12 +879,12 @@ $wrongreasoncount = DB::table('compensations')
                 ->get();
 
                 $Allusers = DB::table('users')
-                ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+                ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
                 ->where('users.current_team_id', $selectedTeam)
                 ->select('users.*', 'teammss.*')
                 ->get();
             $userdepartments = DB::table('users')
-            ->join('departments', 'users.departments_id', '=', 'departments.ID')
+            ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             ->where('users.id', $userid)
             ->select('users.departments_id','departments.*')
             ->get(); // ✅ returns a single stdClass object
@@ -763,8 +892,8 @@ $wrongreasoncount = DB::table('compensations')
     
             $id=$userid;
             $totalaction = DB::table('compensations')
-            ->join('users', 'users.id', '=', 'compensations.Updated_By')
-            ->join('departments', 'users.departments_id', '=', 'departments.ID')
+            ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+            ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
                 ->select('compensations.*','users.*','departments.*')
                 ->where('users.departments_id',$userdepartment->departments_id)
                 ->select('compensations.*')
@@ -785,14 +914,14 @@ $wrongreasoncount = DB::table('compensations')
                 ->count();
                 
                 $teams = DB::table('teammss')
-                ->join('departments', 'teammss.depart_id', '=', 'departments.ID')
+                ->leftJoin('departments', 'teammss.depart_id', '=', 'departments.ID')
                 ->where('teammss.depart_id', $userdepartment->departments_id)
                 ->select('teammss.*','departments.*')
                 ->get(); // ✅ returns a single stdClass object
                 $compensation = DB::table('compensations')
-                ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-                ->join('users', 'users.id', '=', 'compensations.Updated_By')
-                ->join('departments', 'users.departments_id', '=', 'departments.ID')
+                ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+                ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+                ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
                     ->select('compensations.*','users.*','departments.*')
                     ->where('users.departments_id',$userdepartment->departments_id)
                 ->where('vali.validation', 0)
@@ -813,10 +942,10 @@ $wrongreasoncount = DB::table('compensations')
                 ->get();
 
                 $reasons = DB::table('compensations')
-                ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-                ->join('users', 'users.id', '=', 'compensations.Updated_By')
+                ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+                ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
               
-                ->join('departments', 'users.departments_id', '=', 'departments.ID')
+                ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
                     ->select('compensations.*','users.name as Employee','departments.*')
                     ->where('users.departments_id',$userdepartment->departments_id)
                 ->where('vali.reasonid', 0)
@@ -836,9 +965,9 @@ $wrongreasoncount = DB::table('compensations')
                 ->select('compensations.*','users.*', 'vali.*')
                 ->get();
         $wrongactionscount = DB::table('compensations')
-        ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-        ->join('users', 'users.id', '=', 'compensations.Updated_By')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+        ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             ->select('compensations.*','users.*','departments.*')
             ->where('users.departments_id',$userdepartment->departments_id)
         ->where('validation',0)
@@ -860,9 +989,9 @@ $wrongreasoncount = DB::table('compensations')
         ->select('compensations.*', 'vali.*')
         ->count();
         $rightactionscount = DB::table('compensations')
-        ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-        ->join('users', 'users.id', '=', 'compensations.Updated_By')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+        ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             ->select('compensations.*','users.*','departments.*')
             ->where('users.departments_id',$userdepartment->departments_id)
         ->where('validation',1)
@@ -882,9 +1011,9 @@ $wrongreasoncount = DB::table('compensations')
         ->select('compensations.*', 'vali.*')
         ->count();
         $wrongreasoncount = DB::table('compensations')
-        ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-        ->join('users', 'users.id', '=', 'compensations.Updated_By')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+        ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             ->select('compensations.*','users.*','departments.*')
             ->where('users.current_team_id', $request->teams)
             ->where('users.departments_id',$userdepartment->departments_id)
@@ -912,7 +1041,7 @@ $wrongreasoncount = DB::table('compensations')
             $employees = DB::table('users')
     ->leftJoin('compensations', 'users.id', '=', 'compensations.Updated_By')
     ->leftJoin('vali', 'vali.Order_ID', '=', 'compensations.Order_ID')
-          ->join('departments', 'users.departments_id', '=', 'departments.ID')
+          ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->where('users.departments_id', $userdepartment->departments_id)
     ->select(
         'users.id',
@@ -930,12 +1059,12 @@ $wrongreasoncount = DB::table('compensations')
     ->get();
 
         $Allusers=DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->where('users.departments_id', $userid)
         ->select('users.*','departments.*')
         ->get();
         $userdepartments = DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->where('users.id', $userid)
         ->select('users.departments_id','departments.*')
         ->get(); // ✅ returns a single stdClass object
@@ -943,14 +1072,14 @@ $wrongreasoncount = DB::table('compensations')
 
         $id=$userid;
         $teams = DB::table('teammss')
-        ->join('departments', 'teammss.depart_id', '=', 'departments.ID')
-        ->join('users', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'teammss.depart_id', '=', 'departments.ID')
+        ->leftJoin('users', 'users.departments_id', '=', 'departments.ID')
         ->where('teammss.depart_id', $userdepartment->departments_id)
         ->select('teammss.*','departments.*,users.*')
         ->get(); // ✅ returns a single stdClass object
     $totalaction = DB::table('compensations')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
         ->where('users.departments_id',$userdepartment->departments_id)
         ->select('compensations.*')
@@ -972,14 +1101,14 @@ $wrongreasoncount = DB::table('compensations')
         ->count();
 
         $teams = DB::table('teammss')
-        ->join('departments', 'teammss.depart_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'teammss.depart_id', '=', 'departments.ID')
         ->where('teammss.depart_id', $userdepartment->departments_id)
         ->select('teammss.*','departments.*')
         ->get(); // ✅ returns a single stdClass object
         $compensation = DB::table('compensations')
-        ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-        ->join('users', 'users.id', '=', 'compensations.Updated_By')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+        ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             ->select('compensations.*','users.*','departments.*')
             ->where('users.departments_id',$userdepartment->departments_id)
         ->where('vali.validation', 0)
@@ -1000,9 +1129,9 @@ $wrongreasoncount = DB::table('compensations')
         ->get();
 
         $reasons = DB::table('compensations')
-        ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-        ->join('users', 'users.id', '=', 'compensations.Updated_By')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+        ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
        
             ->select('compensations.*','users.name as Employee','departments.*')
             ->where('users.departments_id',$userdepartment->departments_id)
@@ -1023,9 +1152,9 @@ $wrongreasoncount = DB::table('compensations')
         ->select('compensations.*','users.*', 'vali.*')
         ->get();
 $wrongactionscount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->select('compensations.*','users.*','departments.*')
     ->where('users.departments_id',$userdepartment->departments_id)
 ->where('validation',0)
@@ -1047,9 +1176,9 @@ $wrongactionscount = DB::table('compensations')
 ->select('compensations.*', 'vali.*')
 ->count();
 $rightactionscount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->select('compensations.*','users.*','departments.*')
     ->where('users.departments_id',$userdepartment->departments_id)
 ->where('validation',1)
@@ -1069,9 +1198,9 @@ $rightactionscount = DB::table('compensations')
 ->select('compensations.*', 'vali.*')
 ->count();
 $wrongreasoncount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->select('compensations.*','users.*','departments.*')
     
     ->where('users.departments_id',$userdepartment->departments_id)
@@ -1118,8 +1247,8 @@ public function searches(Request $request)
      
     $userid=$request->userid;
     $users = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
-    ->join('tilte', 'users.tilte_id', '=', 'tilte.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('tilte', 'users.tilte_id', '=', 'tilte.ID')
     ->where('users.id',$userid)
     ->select('users.*','departments.*','tilte.*')
     ->first();
@@ -1130,19 +1259,38 @@ public function searches(Request $request)
     $selecteduser = $request->input('usersids');
     $selecteddepartment=$request->input('department');
     if ($selecteduser && $selecteduser !== 'All'){
+        $employees = DB::table('users')
+        ->leftJoin('compensations', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('vali', 'vali.Order_ID', '=', 'compensations.Order_ID')
+        
+        ->select(
+            'users.id',
+            'users.name',
+            'users.email',
+            DB::raw('COUNT(compensations.Order_ID ) as compensations_count'),
+            DB::raw('COUNT(CASE WHEN vali.validation = 0 THEN 1 END) as validation_wrong'),
+            DB::raw('COUNT(CASE WHEN vali.validation = 1 THEN 1 END) as validation_right')
+        )
+        ->where('users.id', $selecteduser)
+        ->groupBy(
+            'users.id',
+            'users.name',
+            'users.email'
+        )
+        ->get();
 
         $deparments =  DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->where('users.id', $selecteduser)
         ->select('users.departments_id','departments.*')
         ->get(); // ✅ returns a single stdClass object
     $Allusers=DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->where('users.departments_id', $selecteddepartment)
     ->select('users.*','departments.*')
     ->get();
     $userdepartments = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->where('users.id', $userid)
     ->select('users.departments_id','departments.*')
     ->get(); // ✅ returns a single stdClass object
@@ -1151,8 +1299,8 @@ public function searches(Request $request)
     $id=$userid;
   
 $totalaction = DB::table('compensations')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->select('compensations.*','users.*','departments.*')
     ->where('users.departments_id',$selecteddepartment)
     ->where('users.id',$selecteduser)
@@ -1175,14 +1323,14 @@ $totalaction = DB::table('compensations')
     ->count();
 
     $teams = DB::table('teammss')
-    ->join('departments', 'teammss.depart_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'teammss.depart_id', '=', 'departments.ID')
     ->where('teammss.depart_id', $selecteddepartment)
     ->select('teammss.*','departments.*')
     ->get(); // ✅ returns a single stdClass object
     $compensation = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
         ->where('users.departments_id',$selecteddepartment)
         ->where('users.id',$selecteduser)
@@ -1204,10 +1352,10 @@ $totalaction = DB::table('compensations')
     ->get();
 
     $reasons = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
    
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.name as Employee','departments.*')
         ->where('users.departments_id',$selecteddepartment)
         ->where('users.id',$selecteduser)
@@ -1228,9 +1376,9 @@ $totalaction = DB::table('compensations')
     ->select('compensations.*','users.*', 'vali.*')
     ->get();
 $wrongactionscount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
 ->select('compensations.*','users.*','departments.*')
 ->where('users.departments_id',$selecteddepartment)
 ->where('users.id',$selecteduser)
@@ -1253,9 +1401,9 @@ if ($request->filled('firstcreatedon_date') && $request->filled('secondcreatedon
 ->select('compensations.*', 'vali.*')
 ->count();
 $rightactionscount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
 ->select('compensations.*','users.*','departments.*')
 ->where('users.departments_id',$selecteddepartment)
 ->where('users.id',$selecteduser)
@@ -1276,9 +1424,9 @@ if ($request->filled('firstcreatedon_date') && $request->filled('secondcreatedon
 ->select('compensations.*', 'vali.*')
 ->count();
 $wrongreasoncount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
 ->select('compensations.*','users.*','departments.*')
 ->where('users.id',$selecteduser)
 
@@ -1310,21 +1458,40 @@ if ($request->filled('firstcreatedon_date') && $request->filled('secondcreatedon
         {
 
             $Allusers = DB::table('users')
-            ->join('teammss', 'users.current_team_id', '=', 'teammss.team_id')
+            ->leftJoin('teammss', 'users.current_team_id', '=', 'teammss.team_id')
             ->where('users.current_team_id', $selectedTeam)
             ->select('users.*', 'teammss.*')
             ->get();
         $userdepartments = DB::table('users')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->where('users.id', $userid)
         ->select('users.departments_id','departments.*')
         ->get(); // ✅ returns a single stdClass object
 
 
         $id=$userid;
+        $employees = DB::table('users')
+        ->leftJoin('compensations', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('vali', 'vali.Order_ID', '=', 'compensations.Order_ID')
+        
+        ->select(
+            'users.id',
+            'users.name',
+            'users.email',
+            DB::raw('COUNT(compensations.Order_ID ) as compensations_count'),
+            DB::raw('COUNT(CASE WHEN vali.validation = 0 THEN 1 END) as validation_wrong'),
+            DB::raw('COUNT(CASE WHEN vali.validation = 1 THEN 1 END) as validation_right')
+        )
+        ->where('users.current_team_id', $selectedTeam)
+        ->groupBy(
+            'users.id',
+            'users.name',
+            'users.email'
+        )
+        ->get();
         $totalaction = DB::table('compensations')
-        ->join('users', 'users.id', '=', 'compensations.Updated_By')
-        ->join('departments', 'users.departments_id', '=', 'departments.ID')
+        ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
             ->select('compensations.*','users.*','departments.*')
             ->where('users.departments_id',$selecteddepartment)
             ->select('compensations.*')
@@ -1345,14 +1512,14 @@ if ($request->filled('firstcreatedon_date') && $request->filled('secondcreatedon
             ->count();
             
             $teams = DB::table('teammss')
-            ->join('departments', 'teammss.depart_id', '=', 'departments.ID')
+            ->leftJoin('departments', 'teammss.depart_id', '=', 'departments.ID')
             ->where('teammss.depart_id', $selecteddepartment)
             ->select('teammss.*','departments.*')
             ->get(); // ✅ returns a single stdClass object
             $compensation = DB::table('compensations')
-            ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-            ->join('users', 'users.id', '=', 'compensations.Updated_By')
-            ->join('departments', 'users.departments_id', '=', 'departments.ID')
+            ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+            ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+            ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
                 ->select('compensations.*','users.*','departments.*')
                 ->where('users.departments_id',$selecteddepartment)
             ->where('vali.validation', 0)
@@ -1373,10 +1540,10 @@ if ($request->filled('firstcreatedon_date') && $request->filled('secondcreatedon
             ->get();
 
             $reasons = DB::table('compensations')
-            ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-            ->join('users', 'users.id', '=', 'compensations.Updated_By')
+            ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+            ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
           
-            ->join('departments', 'users.departments_id', '=', 'departments.ID')
+            ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
                 ->select('compensations.*','users.name as Employee','departments.*')
                 ->where('users.departments_id',$selecteddepartment)
             ->where('vali.reasonid', 0)
@@ -1396,9 +1563,9 @@ if ($request->filled('firstcreatedon_date') && $request->filled('secondcreatedon
             ->select('compensations.*','users.*', 'vali.*')
             ->get();
     $wrongactionscount = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
         ->where('users.departments_id',$selecteddepartment)
     ->where('validation',0)
@@ -1420,9 +1587,9 @@ if ($request->filled('firstcreatedon_date') && $request->filled('secondcreatedon
     ->select('compensations.*', 'vali.*')
     ->count();
     $rightactionscount = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
         ->where('users.departments_id',$selecteddepartment)
     ->where('validation',1)
@@ -1442,9 +1609,9 @@ if ($request->filled('firstcreatedon_date') && $request->filled('secondcreatedon
     ->select('compensations.*', 'vali.*')
     ->count();
     $wrongreasoncount = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
         ->where('users.current_team_id', $request->teams)
         ->where('users.departments_id',$selecteddepartment)
@@ -1470,13 +1637,31 @@ if ($request->filled('firstcreatedon_date') && $request->filled('secondcreatedon
     }
     else{
 
+        $employees = DB::table('users')
+        ->leftJoin('compensations', 'users.id', '=', 'compensations.Updated_By')
+        ->leftJoin('vali', 'vali.Order_ID', '=', 'compensations.Order_ID')
+        
+        ->select(
+            'users.id',
+            'users.name',
+            'users.email',
+            DB::raw('COUNT(compensations.Order_ID ) as compensations_count'),
+            DB::raw('COUNT(CASE WHEN vali.validation = 0 THEN 1 END) as validation_wrong'),
+            DB::raw('COUNT(CASE WHEN vali.validation = 1 THEN 1 END) as validation_right')
+        )->where('users.departments_id',$selecteddepartment)
+        ->groupBy(
+            'users.id',
+            'users.name',
+            'users.email'
+        )
+        ->get();
     $Allusers=DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->where('users.departments_id', $userid)
     ->select('users.*','departments.*')
     ->get();
     $userdepartments = DB::table('users')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->where('users.id', $userid)
     ->select('users.departments_id','departments.*')
     ->get(); // ✅ returns a single stdClass object
@@ -1485,8 +1670,8 @@ if ($request->filled('firstcreatedon_date') && $request->filled('secondcreatedon
     $id=$userid;
   
 $totalaction = DB::table('compensations')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
     ->select('compensations.*','users.*','departments.*')
     ->where('users.departments_id',$selecteddepartment)
     ->select('compensations.*')
@@ -1508,14 +1693,14 @@ $totalaction = DB::table('compensations')
     ->count();
 
     $teams = DB::table('teammss')
-    ->join('departments', 'teammss.depart_id', '=', 'departments.ID')
+    ->leftJoin('departments', 'teammss.depart_id', '=', 'departments.ID')
     ->where('teammss.depart_id', $selecteddepartment)
     ->select('teammss.*','departments.*')
     ->get(); // ✅ returns a single stdClass object
     $compensation = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
         ->select('compensations.*','users.*','departments.*')
         ->where('users.departments_id',$selecteddepartment)
     ->where('vali.validation', 0)
@@ -1536,9 +1721,9 @@ $totalaction = DB::table('compensations')
     ->get();
 
     $reasons = DB::table('compensations')
-    ->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-    ->join('users', 'users.id', '=', 'compensations.Updated_By')
-    ->join('departments', 'users.departments_id', '=', 'departments.ID')
+    ->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+    ->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+    ->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
   
         ->select('compensations.*','users.name as Employee*','departments.*')
         ->where('users.departments_id',$selecteddepartment)
@@ -1559,9 +1744,9 @@ $totalaction = DB::table('compensations')
     ->select('compensations.*','users.*', 'vali.*')
     ->get();
 $wrongactionscount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
 ->select('compensations.*','users.*','departments.*')
 ->where('users.departments_id',$selecteddepartment)
 ->where('validation',0)
@@ -1583,9 +1768,9 @@ if ($request->filled('firstcreatedon_date') && $request->filled('secondcreatedon
 ->select('compensations.*', 'vali.*')
 ->count();
 $rightactionscount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
 ->select('compensations.*','users.*','departments.*')
 ->where('users.departments_id',$selecteddepartment)
 ->where('validation',1)
@@ -1605,9 +1790,9 @@ if ($request->filled('firstcreatedon_date') && $request->filled('secondcreatedon
 ->select('compensations.*', 'vali.*')
 ->count();
 $wrongreasoncount = DB::table('compensations')
-->join('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
-->join('users', 'users.id', '=', 'compensations.Updated_By')
-->join('departments', 'users.departments_id', '=', 'departments.ID')
+->leftJoin('vali', 'compensations.Order_ID', '=', 'vali.Order_ID')
+->leftJoin('users', 'users.id', '=', 'compensations.Updated_By')
+->leftJoin('departments', 'users.departments_id', '=', 'departments.ID')
 ->select('compensations.*','users.*','departments.*')
 
 ->where('users.departments_id',$selecteddepartment)
@@ -1636,6 +1821,7 @@ if ($request->filled('firstcreatedon_date') && $request->filled('secondcreatedon
 
     return view('admin', [
         'users' => $users,
+        'employees'=>$employees,
         'userdepartments' =>  $userdepartments ,
         'department'=>  $deparment ,
         'totalaction'=> $totalaction,

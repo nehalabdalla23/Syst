@@ -8,7 +8,7 @@
 
     <style>
         .table-container {
-            max-height: 600px;
+            max-height: 300px;
             overflow-y: auto;
             border: 1px solid #ccc;
         }
@@ -42,7 +42,7 @@
     </style>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Admin Dashboard</title>
+      <title>Department Report Dashboard</title>
       <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
         rel="stylesheet"
@@ -87,7 +87,7 @@
                 ></span>
                 <a
                   class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
-                   href="{{ route('user', ['userid' => $id]) }}"
+                   href="{{ route('user', [ $users->id]) }}"
                 >
                   <svg
                     class="w-5 h-5"
@@ -106,58 +106,7 @@
                   <span class="ml-4">Department Report</span>
                 </a>
               </li>
-              <li class="relative px-6 py-3">
-                <span
-                  class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg"
-                  aria-hidden="true"
-                ></span>
-                <a
-                  class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
-                   href="{{ route('show.showUSERS', ['userid' => $id]) }}"
-                >
-                  <svg
-                    class="w-5 h-5"
-                    aria-hidden="true"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                    ></path>
-                  </svg>
-                  <span class="ml-4"> All users</span>
-                </a>
-              </li>
-              <li class="relative px-6 py-3">
-                <span
-                  class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg"
-                  aria-hidden="true"
-                ></span>
-                <a
-                  class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
-                   href="{{ route('employees.add', ['id' => $id]) }}"
-                >
-                  <svg
-                    class="w-5 h-5"
-                    aria-hidden="true"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                    ></path>
-                  </svg>
-                  <span class="ml-4"> Add User</span>
-                </a>
-              </li>
+         
               <li class="relative px-6 py-3">
 
                       <path
@@ -507,7 +456,7 @@
             <br/>
 
       <form method="GET" action="{{ route('searches') }}" style="background: #1e1e1e; padding: 25px; border-radius: 10px; max-width: 900px; margin: auto; color: blanchedalmond;">
-      <input type="hidden" name="id" value="{{ $id }}">
+
     <h2 style="color: aliceblue; margin-bottom: 20px;">📊 Filter Employee Data</h2>
 
     <!-- Top Controls -->

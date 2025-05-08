@@ -111,7 +111,7 @@
                 ></span>
                 <a
                   class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
-                  href="modals.html"
+                     href="{{ route('user', ['userid' => $id]) }}"
                 >
                   <svg
                     class="w-5 h-5"
@@ -130,7 +130,6 @@
                   <span class="ml-4">Department Report</span>
                 </a>
               </li>
-      
               <li class="relative px-6 py-3">
                 <span
                   class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg"
@@ -138,7 +137,7 @@
                 ></span>
                 <a
                   class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
-                  href="modals.html"
+                   href="{{ route('show.showUSERS', ['userid' => $id]) }}"
                 >
                   <svg
                     class="w-5 h-5"
@@ -154,7 +153,34 @@
                       d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
                     ></path>
                   </svg>
-                  <span class="ml-4">Admin Report</span>
+                  <span class="ml-4"> All users</span>
+                </a>
+              </li>
+         
+              <li class="relative px-6 py-3">
+                <span
+                  class="absolute inset-y-0 left-0 w-1 bg-purple-600 rounded-tr-lg rounded-br-lg"
+                  aria-hidden="true"
+                ></span>
+                <a
+                  class="inline-flex items-center w-full text-sm font-semibold text-gray-800 transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 dark:text-gray-100"
+                   href="{{ route('employees.add', ['id' => $id]) }}"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    aria-hidden="true"
+                    fill="none"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    ></path>
+                  </svg>
+                  <span class="ml-4"> Add User</span>
                 </a>
               </li>
          
@@ -440,7 +466,11 @@
                 
             <br/>
 
-            <form method="GET" action="{{ route('searcch') }}" class="bg-gray-900 text-blanchedalmond p-6 rounded-lg max-w-4xl mx-auto space-y-4">
+            <form action="{{ route('users.store') }}"  method="POST"  class="bg-gray-900 text-blanchedalmond p-6 rounded-lg max-w-4xl mx-auto space-y-4">
+              Add-------------------------------------------------Users ----------------------------AND VALIDATION
+            @csrf
+
+@method('POST')
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Employee ID -->
         <div style="flex: 1; min-width: 200px;">
@@ -463,13 +493,20 @@
             style="width: 100%; padding: 8px; background: chocolate; color: blanchedalmond; border: none; border-radius: 5px;">
             
         </div>
+        <div style="flex: 1; min-width: 200px;">
+            <label for="EmployeePassword" class="block mb-1">📦 Employee Password</label>
+            <input type="text" id="Employeeemail" name="EmployeePassword"
+            style="width: 100%; padding: 8px; background: chocolate; color: blanchedalmond; border: none; border-radius: 5px;">
+            
+        </div>
 
         <!-- Department -->
         <div style="flex: 1; min-width: 200px;">
-            <label for="departments">🏢  Department</label><br>
+            <label for="departments">🏢 Department</label><br>
             <select name="deparments" style="width: 100%; padding: 8px; background: chocolate; color: blanchedalmond; border: none; border-radius: 5px;">
+            <option value="None" {{ request('teams') == 'None' ? 'selected' : '' }}>None</option>
                 @foreach ($departments as $department)
-                    <option value="{{ $department->ID }}">{{ $department->Names }}</option>
+                    <option name="departments" value="{{ $department->ID }}">{{ $department->Names }}</option>
                 @endforeach
             </select>
         </div>
@@ -477,24 +514,25 @@
  
 
 
+    
     <div style="flex: 1; min-width: 200px;">
-            <label for="teams">👥  Team</label><br>
+            <label for="teams">👥 Team</label><br>
             <select name="teams" style="width: 100%; padding: 8px; background: chocolate; color: blanchedalmond; border: none; border-radius: 5px;">
-                <option value="All" {{ request('teams') == 'All' ? 'selected' : '' }}>All</option>
+                <option value="None" {{ request('teams') == 'None' ? 'selected' : '' }}>None</option>
                 @foreach ($teams as $team)
-                    <option value="{{ $team->team_id }}" {{ request('teams') == $team->team_id ? 'selected' : '' }}>
+                    <option name ="teams" value="{{ $team->team_id }}" {{ request('teams') == $team->team_id ? 'selected' : '' }}>
                         {{ $team->team_name }}
                     </option>
                 @endforeach
             </select>
         </div>
-        
         <div style="flex: 1; min-width: 200px;">
-            <label for="tiltes">👥  title</label><br>
+            <label for="tiltes">👥 title</label><br>
             <select name="tiltes" style="width: 100%; padding: 8px; background: chocolate; color: blanchedalmond; border: none; border-radius: 5px;">
-                <option value="All" {{ request('tiltes') == 'All' ? 'selected' : '' }}>All</option>
+            <option value="None" {{ request('tiltes') == 'None' ? 'selected' : '' }}>None</option>
+             
                 @foreach ($tiltes as $tiltes)
-                    <option value="{{ $tiltes->ID  }}" >
+                    <option name ="tiltes"value="{{ $tiltes->ID  }}" >
                         {{ $tiltes->Name }}
                     </option>
                 @endforeach
