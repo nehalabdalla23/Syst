@@ -26,5 +26,27 @@ COPY . .
 # ضبط صلاحيات مجلدات Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
+# نسخ إعداد Apache لدعم Laravel
 RUN bash -c 'cat > /etc/apache2/sites-available/000-default.conf <<EOF
+<VirtualHost *:80>
+    DocumentRoot /var/www/html/public
+    <Directory /var/www/html/public>
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+EOF'
 
+# تفعيل Apache Rewrite Module
+RUN a2enmod rewrite
+
+# تثبيت Laravel dependencies
+RUN composer install --no-dev --optimize-autoloader
+
+# مسح الكاش وتشغيل الأوامر الأساسية
+RUN php artisan config:clear && php artisan route:clear && php artisan view:clear
+
+# فتح المنفذ 80 (المستخدم من Apache)
+EXPOSE 80
+
+# لا حاجة لـ CMD لأن Apache يعمل تلقائيًا
