@@ -1,8 +1,8 @@
 # استخدم صورة PHP الرسمية مع Apache
 FROM php:8.2-apache
 
-# تثبيت الأدوات الأساسية وامتدادات PHP اللازمة للـ Laravel
-RUN apt-get update && apt-get install -y \
+# تحديث الحزم وتثبيت الأدوات الأساسية وامتدادات PHP اللازمة للـ Laravel
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     git \
     unzip \
     zip \
@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    && apt-get clean \
     && docker-php-ext-install pdo pdo_mysql zip mbstring exif pcntl bcmath gd
 
 # تثبيت Composer
