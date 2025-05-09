@@ -1,33 +1,31 @@
-# استخدم صورة PHP الرسمية مع Apache
+# استخدام صورة PHP مع Apache
 FROM php:8.2-apache
 
-# تثبيت الأدوات الأساسية وامتدادات PHP اللازمة لـ Laravel
+# تثبيت الأدوات الضرورية وامتدادات PHP
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     zip \
+    curl \
     libzip-dev \
-    libonig-dev \
-    libxml2-dev \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    curl \
     && docker-php-ext-install pdo pdo_mysql zip mbstring exif pcntl bcmath gd
 
 # تثبيت Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# تعيين مجلد العمل
+# تحديد مجلد العمل
 WORKDIR /var/www/html
 
-# نسخ ملفات Laravel إلى الحاوية
+# نسخ ملفات المشروع
 COPY . .
 
-# إعطاء صلاحيات للمجلدات المهمة
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# ضبط صلاحيات Laravel
+RUN chown -R www-data:www-data storage bootstrap/cache
 
-# نسخ إعداد Apache لدعم Laravel (مغلف بطريقة صحيحة)
+# إعداد Apache لتوجيه الطلبات إلى public/
 RUN bash -c "cat <<EOF > /etc/apache2/sites-available/000-default.conf
 <VirtualHost *:80>
     DocumentRoot /var/www/html/public
@@ -38,17 +36,17 @@ RUN bash -c "cat <<EOF > /etc/apache2/sites-available/000-default.conf
 </VirtualHost>
 EOF"
 
-# تفعيل Apache mod_rewrite
+# تفعيل mod_rewrite
 RUN a2enmod rewrite
 
-# تحميل dependencies Laravel
+# تثبيت مكتبات Laravel
 RUN composer install --no-dev --optimize-autoloader
 
 # تنظيف الكاش
 RUN php artisan config:clear && php artisan route:clear && php artisan view:clear
 
-# فتح المنفذ 80
+# فتح المنفذ الافتراضي لـ Apache
 EXPOSE 80
 
-# الأمر الأساسي لتشغيل Apache (وليس php artisan serve)
+# بدء Apache
 CMD ["apache2-foreground"]
