@@ -1,4 +1,5 @@
-# تفعيل إعداد Apache لدعم Laravel
+FROM php:5.6.39-apache
+COPY --chown=root:root /php /var/www/html/
 RUN echo '<VirtualHost *:8080>
     DocumentRoot /var/www/html/public
     <Directory /var/www/html/public>
