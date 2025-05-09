@@ -1,8 +1,8 @@
-# استخدم صورة PHP الرسمية مع Apache
+# استخدم صورة PHP مع Apache
 FROM php:8.2-apache
 
-# تحديث الحزم وتثبيت الأدوات الأساسية وامتدادات PHP اللازمة للـ Laravel
-RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+# تحديث النظام وتثبيت الحزم المطلوبة
+RUN apt-get update && apt-get install -y \
     git \
     unzip \
     zip \
@@ -11,42 +11,45 @@ RUN apt-get update && apt-get upgrade -y && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    && apt-get clean \
-    && docker-php-ext-install pdo pdo_mysql zip mbstring exif pcntl bcmath gd
+    libonig-dev \
+    libxml2-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_mysql zip mbstring exif pcntl bcmath gd \
+    && apt-get clean
 
-# تثبيت Composer
+# نسخ Composer من صورة أخرى
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# ضبط مجلد التطبيق
+# تعيين مجلد العمل
 WORKDIR /var/www/html
 
-# نسخ ملفات Laravel إلى حاوية العمل
+# نسخ المشروع إلى الحاوية
 COPY . .
 
-# إعداد صلاحيات التخزين
+# إعطاء صلاحيات للمجلدات
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-# نسخ إعداد Apache لدعم Laravel
-RUN echo "<VirtualHost *:80>" > /etc/apache2/sites-available/000-default.conf && \
-    echo "    DocumentRoot /var/www/html/public" >> /etc/apache2/sites-available/000-default.conf && \
-    echo "    <Directory /var/www/html/public>" >> /etc/apache2/sites-available/000-default.conf && \
-    echo "        AllowOverride All" >> /etc/apache2/sites-available/000-default.conf && \
-    echo "        Require all granted" >> /etc/apache2/sites-available/000-default.conf && \
-    echo "    </Directory>" >> /etc/apache2/sites-available/000-default.conf && \
-    echo "</VirtualHost>" >> /etc/apache2/sites-available/000-default.conf
-
-# تفعيل Apache Rewrite Module
+# تفعيل Apache Rewrite
 RUN a2enmod rewrite
 
-# تحميل الـ dependencies
+# تفعيل إعداد Apache لدعم Laravel
+RUN echo '<VirtualHost *:80>
+    DocumentRoot /var/www/html/public
+    <Directory /var/www/html/public>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+
+# تثبيت Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# إعداد APP_KEY
+# تنظيف الكاش
 RUN php artisan config:clear && php artisan route:clear && php artisan view:clear
 
-# فتح المنفذ من البيئة (Railway يعطيه تلقائيًا)
-ENV PORT=8080
-EXPOSE ${PORT}
+# فتح المنفذ 80
+EXPOSE 80
 
-# الأمر الأساسي لتشغيل Laravel
-CMD php artisan serve --host=0.0.0.0 --port=${PORT}
+# الأمر الأساسي لتشغيل Apache
+CMD ["apache2-foreground"]
