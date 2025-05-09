@@ -12,43 +12,43 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libmcrypt-dev \
     curl \
     && docker-php-ext-install pdo pdo_mysql zip mbstring exif pcntl bcmath gd
 
 # تثبيت Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# إعداد مجلد العمل داخل الحاوية
+# ضبط مجلد التطبيق
 WORKDIR /var/www/html
 
-# نسخ جميع الملفات من مشروعك إلى الحاوية
+# نسخ ملفات Laravel إلى حاوية العمل
 COPY . .
 
-# ضبط صلاحيات مجلدات Laravel
+# إعداد صلاحيات التخزين
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# إعداد Apache لدعم Laravel (توجيه Apache للـ public)
-RUN bash -c 'cat > /etc/apache2/sites-available/000-default.conf <<EOF
-<VirtualHost *:80>
+# نسخ إعداد Apache لدعم Laravel
+RUN echo "<VirtualHost *:80>
     DocumentRoot /var/www/html/public
     <Directory /var/www/html/public>
         AllowOverride All
         Require all granted
     </Directory>
-</VirtualHost>
-EOF'
+</VirtualHost>" > /etc/apache2/sites-available/000-default.conf
 
-# تفعيل Apache mod_rewrite
+# تفعيل Apache Rewrite Module
 RUN a2enmod rewrite
 
-# تثبيت الـ dependencies باستخدام Composer
+# تحميل الـ dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# مسح الكاش وتشغيل الأوامر الأساسية للـ Laravel
+# إعداد APP_KEY
 RUN php artisan config:clear && php artisan route:clear && php artisan view:clear
 
-# فتح المنفذ 80
-EXPOSE 80
+# فتح المنفذ من البيئة (Railway يعطيه تلقائيًا)
+ENV PORT=8080
+EXPOSE ${PORT}
 
-# تشغيل Apache عند بدء الحاوية
-CMD ["apache2-foreground"]
+# الأمر الأساسي لتشغيل Laravel
+CMD php artisan serve --host=0.0.0.0 --port=${PORT}
