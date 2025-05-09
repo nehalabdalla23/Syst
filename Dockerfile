@@ -1,8 +1,7 @@
-# صورة أساسية
+
 FROM php:8.2-apache
 
-# إعداد ملف Apache VirtualHost
-RUN bash -c 'cat > /etc/apache2/sites-available/000-default.conf <<EOF
+RUN bash -c 'cat <<EOF > /etc/apache2/sites-available/000-default.conf
 <VirtualHost *:8000>
     DocumentRoot /var/www/html/public
     <Directory /var/www/html/public>
@@ -13,11 +12,3 @@ RUN bash -c 'cat > /etc/apache2/sites-available/000-default.conf <<EOF
 </VirtualHost>
 EOF'
 
-# تفعيل mod_rewrite
-RUN a2enmod rewrite
-
-# فتح المنفذ
-EXPOSE 8000
-
-# تشغيل Apache
-CMD ["apache2-foreground"]
