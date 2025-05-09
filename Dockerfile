@@ -17,7 +17,7 @@ EOF'
 RUN a2enmod rewrite
 
 # فتح المنفذ
-EXPOSE 8080
+EXPOSE 8000
 
 # تشغيل Apache
 CMD ["apache2-foreground"]
