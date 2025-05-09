@@ -29,7 +29,7 @@ COPY . .
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # نسخ إعداد Apache لدعم Laravel
-RUN bash -c 'cat <<EOF > /etc/apache2/sites-available/000-default.conf
+RUN bash -c "cat > /etc/apache2/sites-available/000-default.conf << 'EOF'
 <VirtualHost *:80>
     DocumentRoot /var/www/html/public
     <Directory /var/www/html/public>
@@ -37,7 +37,8 @@ RUN bash -c 'cat <<EOF > /etc/apache2/sites-available/000-default.conf
         Require all granted
     </Directory>
 </VirtualHost>
-EOF'
+EOF"
+
 
 # تفعيل Apache Rewrite Module
 RUN a2enmod rewrite
