@@ -1,3 +1,4 @@
-vendor
 node_modules
-hello.py
+npm-debug.log
+docker-compose.yml
+.git
