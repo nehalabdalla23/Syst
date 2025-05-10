@@ -2,12 +2,15 @@
 FROM ubuntu:22.04
 
 # install app dependencies
-RUN apt-get update && apt-get install -y python3 python3-pip
-RUN pip install flask==3.0.*
-FROM ubuntu:latest  # أو أي صورة أساسية أخرى تختارها
 
-# تحديث النظام وتثبيت الحزم
+# تحديد صورة الأساس
+FROM ubuntu:latest
+
+# تحديث النظام وتثبيت Python3 و pip
 RUN apt-get update && apt-get install -y python3 python3-pip
+
+# تثبيت Flask باستخدام pip
+RUN pip install flask==3.0.*
 
 # install app
 COPY hello.py /
