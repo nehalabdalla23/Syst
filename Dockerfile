@@ -30,7 +30,7 @@ RUN composer install --no-dev --optimize-autoloader
 RUN chmod -R 775 storage bootstrap/cache
 
 # تعيين المنفذ
-EXPOSE 8080
+EXPOSE 9000
 
 # أمر التشغيل الرئيسي
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=${PORT:-8080}"]
