@@ -24,6 +24,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Copy app files
 COPY . .
+RUN php artisan config:clear && php artisan cache:clear && php artisan route:clear
 
 # Install PHP dependencies
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
