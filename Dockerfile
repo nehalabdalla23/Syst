@@ -1,30 +1,36 @@
-FROM php:8.1-fpm
+# المرحلة الأولى: إعداد Laravel
+FROM php:8.2-cli
 
-# تثبيت الحزم الأساسية مثل git و unzip و zip
+# تثبيت التبعيات المطلوبة
 RUN apt-get update && apt-get install -y \
-    git \
     unzip \
+    curl \
+    git \
     zip \
     libpng-dev \
     libjpeg-dev \
-    libfreetype6-dev && \
-    docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install gd pdo pdo_mysql
+    libfreetype6-dev \
+    libonig-dev \
+    libxml2-dev \
+    && docker-php-ext-install pdo pdo_mysql mbstring gd
 
 # تثبيت Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html
+# تحديد مجلد العمل
+WORKDIR /app
 
-# نسخ الملفات إلى الحاوية
+# نسخ ملفات المشروع
 COPY . .
 
-# تثبيت الاعتمادات
+# تثبيت مكتبات Laravel
 RUN composer install --no-dev --optimize-autoloader
 
-# ضبط أذونات الملفات
-RUN chown -R www-data:www-data /var/www/html
+# إعطاء صلاحيات مناسبة
+RUN chmod -R 775 storage bootstrap/cache
 
-EXPOSE 9000
-CMD ["php-fpm"]
+# تعيين المنفذ
+EXPOSE 8080
 
+# أمر التشغيل الرئيسي
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=${PORT:-8080}"]
