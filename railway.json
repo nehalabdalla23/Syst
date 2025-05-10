@@ -1,4 +1,6 @@
 {
-  "start": "php artisan serve ",
-  "build": "composer install"
+  "build": {
+    "command": "composer install"
+  },
+  "start": "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
 }
