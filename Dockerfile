@@ -9,7 +9,7 @@ RUN set -ex ; \
     composer -n validate --strict ; \
     composer -n install --no-scripts --ignore-platform-reqs --no-dev
 
-ARG ver=7.4
+ARG ver=10
 FROM php:$ver-apache
 RUN set -ex ; \
     docker-php-ext-install pdo_mysql mysqli ; \
