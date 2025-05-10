@@ -1,5 +1,5 @@
 <<'DOCKERFILE' tee Dockerfile >/dev/null && git add Dockerfile && git commit -m 'add composer install to build'
-ARG ver=7.4
+ARG ver=710
 FROM php:$ver-cli
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 COPY composer.json composer.json
