@@ -1,21 +1,23 @@
-# syntax=docker/dockerfile:1
-FROM ubuntu:22.04
+# استخدم صورة رسمية تحتوي على Python
+FROM python:3.11-slim
 
-# install app dependencies
+# منع ظهور رسائل تحذيرية أثناء التثبيت
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# تحديد صورة الأساس
-FROM ubuntu:latest
+# تثبيت التحديثات الأساسية (مهمة لتثبيت الحزم إن لزم الأمر)
+RUN apt-get update && apt-get install -y --no-install-recommends gcc
 
-# تحديث النظام وتثبيت Python3 و pip
-RUN apt-get update && apt-get install -y python3 python3-pip
+# إعداد مجلد العمل داخل الصورة
+WORKDIR /app
 
-# تثبيت Flask باستخدام pip
-RUN pip install flask==3.0.*
+# نسخ ملفات المشروع
+COPY hello.py /app/
+# (اختياري) إذا كان لديك requirements.txt انسخه أيضًا:
+# COPY requirements.txt /app/
 
-# install app
-COPY hello.py /
+# تثبيت Flask
+RUN pip install --no-cache-dir flask==3.0.*
 
-# final configuration
-ENV FLASK_APP=hello
-EXPOSE 8000
-CMD ["flask", "run", "--host", "0.0.0.0", "--port", "8000"]
+# الأمر الرئيسي لتشغيل التطبيق
+CMD ["python3", "hello.py"]
