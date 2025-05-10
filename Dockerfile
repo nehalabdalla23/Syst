@@ -31,7 +31,13 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Set Laravel permissions
 RUN chmod -R 775 storage bootstrap/cache
+WORKDIR /app
 
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
 # Expose port
 EXPOSE 8000
 
