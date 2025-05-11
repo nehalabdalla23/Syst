@@ -1,30 +1,34 @@
-FROM php:8.1-fpm
+FROM php:8.2-fpm
 
-# تثبيت الحزم الأساسية مثل git و unzip و zip
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     git \
-    unzip \
-    zip \
+    curl \
     libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev && \
-    docker-php-ext-configure gd --with-freetype --with-jpeg && \
-    docker-php-ext-install gd pdo pdo_mysql
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    libzip-dev \
+    mysql-client \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# تثبيت Composer
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html
+# Set working directory
+WORKDIR /var/www
 
-# نسخ الملفات إلى الحاوية
+# Copy project files
 COPY . .
 
-# تثبيت الاعتمادات
+# Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# ضبط أذونات الملفات
-RUN chown -R www-data:www-data /var/www/html
+# Set permissions
+RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www
 
+# Expose port
 EXPOSE 9000
-CMD ["php-fpm"]
 
+CMD ["php-fpm"]
