@@ -1,9 +1,41 @@
 version: '3.8'
+
 services:
-  laravel-php-apache-environment:
-    build: .
-    image: custom-laravel-php
+  app:
+    build:
+      context: .
+    container_name: laravel_app
     volumes:
-      - ./doc-root:/var/www/html/
+      - .:/var/www
+    depends_on:
+      - mysql
+    networks:
+      - laravel
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_server
     ports:
-      - 8090:80
+      - "8080:80"
+    volumes:
+      - .:/var/www
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - laravel
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql_db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: railway
+    ports:
+      - "3306:3306"
+    networks:
+      - laravel
+
+networks:
+  laravel:
+    driver: bridge
